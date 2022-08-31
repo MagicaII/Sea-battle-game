@@ -195,8 +195,14 @@ class Game:
         while self.human.ally_board.ships_alive > 0 and self.human.enemy_board.ships_alive > 0:
             print('  Your field:\n')
             print(self.human.ally_board)
+            if self.human.enemy_board.ships_alive == 0:
+                print('You' won!'')
+                break
             print('  Computer field:\n')
             print(self.human.enemy_board)
+            if self.human.ally_board.ships_alive == 0:
+                print('You lost')
+                break
             self.human.move()
             self.ai.move()
 
