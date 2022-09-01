@@ -99,12 +99,10 @@ class Board:
         if self.matrix[cur.y - 1][cur.x - 1] == 'O' or self.matrix[cur.y - 1][cur.x - 1] == '•':
             self.matrix[cur.y - 1][cur.x - 1] = 'T'
             print('Miss!')
-
         if self.matrix[cur.y - 1][cur.x - 1] == '■':
             self.matrix[cur.y - 1][cur.x - 1] = 'X'
             print('Damaged!')
             self.ships_alive -= 1
-
 
 class Player:
     def __init__(self, ally_board, enemy_board):
@@ -118,7 +116,6 @@ class Player:
         while True:
             try:
                 target = self.ask()
-                print(target)
                 self.enemy_board.shot(target)
             except OutOfBorders:
                 print('You shot outside of game field!')
@@ -132,7 +129,7 @@ class User(Player):
         while True:
             enter = input('Enter coordinates to shoot: ').split(',')
             if len(enter) != 2:
-                print('Enter coordinated in give format: x,y ')
+                print('Enter coordinated in given format: x,y ')
                 continue
             if not (enter[0].isdigit() and enter[1].isdigit()):
                 print('Use numbers')
@@ -196,7 +193,7 @@ class Game:
             print('  Your field:\n')
             print(self.human.ally_board)
             if self.human.enemy_board.ships_alive == 0:
-                print('You' won!'')
+                print('You won!')
                 break
             print('  Computer field:\n')
             print(self.human.enemy_board)
