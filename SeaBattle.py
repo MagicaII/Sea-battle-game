@@ -60,15 +60,18 @@ class Board:
         self.hid = False
 
     def add_ship(self, ship: Ship):
+        # исключения в появление корабля в неправильном месте
         for dot in ship.dots:
             if self.out(dot):
                 raise OutOfBorders
             if self.matrix[dot.y - 1][dot.x - 1] == '■' or self.matrix[dot.y - 1][dot.x - 1] == '•':
                 raise UsedDot
+                
         for dot in ship.dots:
             self.matrix[dot.y - 1][dot.x - 1] = '■'
         self.ships_alive += ship.size
-
+        
+    #  Окружает каждую позицию корабля точками
     def contour(self, ship: Ship):
         for dot in ship.dots:
             for row in range(dot.y - 2, dot.y + 1):
@@ -99,11 +102,12 @@ class Board:
         if self.matrix[cur.y - 1][cur.x - 1] == 'O' or self.matrix[cur.y - 1][cur.x - 1] == '•':
             self.matrix[cur.y - 1][cur.x - 1] = 'T'
             print('Miss!')
+            return False
         if self.matrix[cur.y - 1][cur.x - 1] == '■':
             self.matrix[cur.y - 1][cur.x - 1] = 'X'
             print('Damaged!')
             self.ships_alive -= 1
-
+            return True
 class Player:
     def __init__(self, ally_board, enemy_board):
         self.ally_board = ally_board
@@ -116,7 +120,8 @@ class Player:
         while True:
             try:
                 target = self.ask()
-                self.enemy_board.shot(target)
+                if self.enemy_board.shot(target):   #  В случае попадания делает повторный выстрел
+                    continue
             except OutOfBorders:
                 print('You shot outside of game field!')
             except UsedDot:
@@ -126,6 +131,7 @@ class Player:
 
 class User(Player):
     def ask(self):
+        # просит пользователя ввести координаты до тех пор пока они не будут введены корректно
         while True:
             enter = input('Enter coordinates to shoot: ').split(',')
             if len(enter) != 2:
@@ -134,8 +140,10 @@ class User(Player):
             if not (enter[0].isdigit() and enter[1].isdigit()):
                 print('Use numbers')
                 continue
+                
             x, y = enter
             break
+            
         return Dot(int(x), int(y))
 
 
@@ -192,16 +200,14 @@ class Game:
         while self.human.ally_board.ships_alive > 0 and self.human.enemy_board.ships_alive > 0:
             print('  Your field:\n')
             print(self.human.ally_board)
-            if self.human.enemy_board.ships_alive == 0:
-                print('You won!')
-                break
             print('  Computer field:\n')
             print(self.human.enemy_board)
+            self.human.move()
+            if self.human.enemy_board.ships_alive == 0:
+                print('You won!')
+            self.ai.move()
             if self.human.ally_board.ships_alive == 0:
                 print('You lost')
-                break
-            self.human.move()
-            self.ai.move()
 
     def start(self):
         self.greet()
